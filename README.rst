@@ -12,7 +12,7 @@ Requirements
 ''''''''''''
 This plugin is developed in python and requires the `Pâté plugin system <https://github.com/pag/pate>`_ for Kate to be installed.
 
-The PHP interpreted must also be present to allow for sourcecode parsing.
+The PHP interpreter must also be present to allow for sourcecode parsing.
 
 LICENSE
 '''''''
