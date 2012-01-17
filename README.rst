@@ -6,7 +6,7 @@ The plugin can also be invoked with the shortcut **Meta+D** (Meta is usually the
 
 Installation
 ''''''''''''
-Copy or link the phpdoc directory under ~/.kde4/share/apps/kate/pate to install it only for the current user, or do the same in /usr/share/apps/kate/pate to do it globally.
+Copy or link the phpdoc directory under *~/.kde4/share/apps/kate/pate* to install it only for the current user, or do the same in */usr/share/apps/kate/pate* to do it globally.
 
 Requirements
 ''''''''''''
