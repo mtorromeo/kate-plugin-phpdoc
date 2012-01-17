@@ -1,0 +1,44 @@
+#!/usr/bin/env php
+<?php
+function usage($error = null) {
+	if ($error !== null)
+		echo "$error\n\n";
+
+	$appname = basename($_SERVER['argv'][0]);
+	echo "Usage: $appname file.php\n";
+	echo "       $appname -\n";
+	echo "\n";
+	echo "(c) 2012 - Massimiliano Torromeo\n";
+	exit(1);
+}
+
+if (count($_SERVER['argv']) < 2)
+	usage();
+
+$filename = $_SERVER['argv'][1];
+
+if ($filename == '-') {
+	$sourcecode = file_get_contents('php://stdin');
+} else {
+	if (!file_exists($filename))
+		usage("File not found: $filename");
+
+	$sourcecode = file_get_contents($filename);
+}
+
+$tokens = token_get_all( $sourcecode );
+$out_tokens = array();
+
+foreach ($tokens as $token) {
+	if (is_array($token)) {
+		$name = token_name($token[0]);
+		if ($name != 'T_WHITESPACE') {
+			$line = (int)$token[2];
+			$out_tokens[] = array( 'line' => $line, 'name' => $name, 'source' => $token[1] );
+		}
+	} else {
+		$out_tokens[] = array( 'line' => -1, 'name' => '', 'source' => $token );
+	}
+}
+
+echo json_encode($out_tokens);
