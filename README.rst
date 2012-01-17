@@ -16,7 +16,7 @@ The PHP interpreter must also be present to allow for sourcecode parsing.
 
 LICENSE
 '''''''
-Copyright (c) 2010-2012 Massimiliano Torromeo
+Copyright (c) 2012 Massimiliano Torromeo
 
 Free software released under the terms of the BSD license.
 
