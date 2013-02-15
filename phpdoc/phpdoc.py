@@ -4,7 +4,6 @@ import os
 import json
 import re
 
-from textwrap import dedent
 
 def phpdoc_class(tokens):
     class_name = None
@@ -14,6 +13,7 @@ def phpdoc_class(tokens):
             break
 
     return ['/**', ' * %s' % class_name, ' */']
+
 
 def phpdoc_function(tokens):
     function_name = None
@@ -34,7 +34,7 @@ def phpdoc_function(tokens):
             arg = {'name': None, 'type': 'mixed', 'optional': None}
 
         elif token['name'] == 'T_VARIABLE':
-            prev_token = tokens[i-1]
+            prev_token = tokens[i - 1]
             if prev_token['source'] not in ('(', ','):
                 arg['type'] = prev_token['source']
             arg['name'] = token['source']
@@ -56,6 +56,7 @@ def phpdoc_function(tokens):
 
     return doc_block
 
+
 def phpdoc_variable(tokens):
     var_name = None
     for token in tokens:
@@ -64,6 +65,7 @@ def phpdoc_variable(tokens):
             break
 
     return ['/**', ' * %s' % var_name, ' *', ' * @var mixed', ' */']
+
 
 @kate.action('Insert phpDoc', shortcut='Meta+D', menu='Tools')
 def add_phpdoc():
@@ -74,15 +76,16 @@ def add_phpdoc():
     if pos.line() == 0:
         return
 
-    parser = subprocess.Popen( [ os.path.join( os.path.dirname(__file__), 'php-parse' ), "-" ], stdin = subprocess.PIPE, stdout = subprocess.PIPE )
-    parser.stdin.write( document.text() )
+    parser = subprocess.Popen([os.path.join(os.path.dirname(__file__), 'php-parse'), "-"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    parser.stdin.write(document.text().encode("utf-8"))
+    parser.stdin.flush()
     output = parser.communicate()[0]
-    tokens = json.loads( output )
+    tokens = json.loads(output.decode('utf-8'))
 
     if not tokens:
         return
 
-    line = pos.line()+1
+    line = pos.line() + 1
 
     # strip all tokens on lines after the cursor position
     for x, line_tokens in enumerate(tokens):
@@ -96,15 +99,13 @@ def add_phpdoc():
     tokens = tokens[:x]
     x -= 1
 
-    print tokens
-
     # Find function/class definition start
     source_line = None
     while x:
         if tokens[x]['name'] in ('T_FUNCTION', 'T_CLASS'):
             source_line = tokens[x]['line']
             break
-        if x and tokens[x]['name'] == 'T_VARIABLE' and tokens[x-1]['name'] in ('T_STATIC', 'T_PROTECTED', 'T_PUBLIC', 'T_PRIVATE', 'T_VAR'):
+        if x and tokens[x]['name'] == 'T_VARIABLE' and tokens[x - 1]['name'] in ('T_STATIC', 'T_PROTECTED', 'T_PUBLIC', 'T_PRIVATE', 'T_VAR'):
             source_line = tokens[x]['line']
             break
         x -= 1
@@ -133,7 +134,7 @@ def add_phpdoc():
 
     for i, line in enumerate(doc_block):
         doc_block[i] = "%s%s" % (m.group(0), line)
-    doc_block = "\n".join(doc_block)+"\n"
+    doc_block = "\n".join(doc_block) + "\n"
 
     document.startEditing()
     pos.setPosition(source_line, 0)
